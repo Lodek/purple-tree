@@ -52,28 +52,31 @@ def get_parent():
 
 
 def main():
-    parent = Node(url='http://google.com', title=get_title('http://google.com'))
-    session.add(parent)
- #   logging.info('main - ROOT created')
+    child = Node(url=os.getenv('QUTE_URL'))
     
-    child =  Node(url=os.getenv('QUTE_URL'), title=get_title(os.getenv('QUTE_URL')))
-#    logging.info('main - child node created with {} url'.format(os.getenv('QUTE_URL')))
+    with open(os.getenv('QUTE_FIFO'), 'w') as fifo:
+        #logging.info('main - opened FIFO')
+        #fifo.write('open {} {}'.format(get_param(),child.url))
+        fifo.write('open -b {}'.format(child.url))                  
+        #logging.info('main - written to fifo')
 
-#    child_q = session.query(Node).filter(Node.url==child.url).first()
-#    if child_q is not None:
-#        child = child_q
+    parent = Node(url='http://google.com', title='http://google.com')
+    session.add(parent)
+    #logging.info('main - ROOT created')
+    
+    #child.title = get_title(child.url)
+    #logging.info('main - child node created with {} url'.format(os.getenv('QUTE_URL')))
+
+    #child_q = session.query(Node).filter(Node.url==child.url).first()
+    #if child_q is not None:
+        #child = child_q
     child.parents.append(parent)
     session.add(child)
     session.commit()
-#    logging.info('main - both objects created and added to DB')
-#    logging.info('main - qute  fifo = {}'.format(os.getenv('QUTE_FIFO')))
+    #logging.info('main - both objects created and added to DB')
+    #logging.info('main - qute  fifo = {}'.format(os.getenv('QUTE_FIFO')))
 
-    with open(os.getenv('QUTE_FIFO'), 'w') as fifo:
-        logging.info('main - opened FIFO')
-#        fifo.write('open {} {}'.format(get_param(),child.url))
-        fifo.write('open -b {}'.format(child.url))                  
- #       logging.info('main - written to fifo')
-
+ 
                   
 if __name__ == '__main__':
 #    logging.info('__name__')

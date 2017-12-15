@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship, sessionmaker
 
 Base = declarative_base()
 engine = create_engine('sqlite:////root/tree/tree.db', echo=True)
-Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -15,5 +14,6 @@ class Node(Base):
     id = Column(Integer, primary_key = True)
     url = Column(String)
     title = Column(String)
-    parents = relationship("Node", secondary=relations_tb, back_populates = 'childs')
-    childs = relationship("Node", secondary=relations_tb, back_populates = 'parents')
+    childs = relationship("Node", secondary=relations_tb, primaryjoin=id==relations_tb.c.par_id, secondaryjoin=id==relations_tb.c.child_id, backref='parents')
+
+Base.metadata.create_all(engine)

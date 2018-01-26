@@ -12,20 +12,12 @@ import re
 
 
 root_dir = '/root/tree'
-script_file = root_dir + '/purple_tree.py'
-echoes_file = root_dir + '/echoes'
-echoer_file = root_dir + '/echoer.sh'
-LOG_FILENAME = '/root/tree/log'
-FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
-logging.basicConfig(format=FORMAT, filename=LOG_FILENAME, level=logging.INFO)
 
 Base = declarative_base()
 engine = create_engine('sqlite:///{}/tree.db'.format(root_dir), echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 relations_tb = Table('par_child_tb', Base.metadata, Column('par_id', Integer, ForeignKey('nodes.id'), primary_key = True), Column('child_id', Integer, ForeignKey('nodes.id'), primary_key = True))
-
-fifo = open(os.getenv('QUTE_FIFO'), 'w')
 
 
 class Node(Base):
@@ -86,66 +78,8 @@ def create_child(impostor):
     return child
 
 
-def qute_open(arguments):
-    if arguments[2] == 'root':
-        parent = get_root()
-    else:
-        parent = get_parent(arguments[2], os.getenv('QUTE_TITLE'))
-    search = ''
-    for word in arguments[3:]:
-        search += '{} '.format(word)
-    search = search[:-1]
-
-    fifo.write('open {} {}\n'.format(arguments[1],search))
-    time.sleep(.2)
-    fifo.write('spawn -u {}'.format(echoer_file))
-    time.sleep(1)
-    echoes = listen_echoes()
-    child = Node(url=echoes[1], title=get_title(echoes[1]))
-    child.parents.append(parent)
-    session.add(child)
-    session.commit()
-    return 
-
-
-def qute_hint(arguments):
-    child = Node(url=os.getenv('QUTE_URL'))
-    fifo.write('open {} {}'.format(arguments[1], child.url))
-    parent = get_parent(arguments[2], arguments[3])
-    child = create_child(child)
-    child.parents.append(parent)
-    session.commit()
-    return
-
-
-def qute_rapid(arguments):
-    child = Node(url=os.getenv('QUTE_URL'))
-    fifo.write('open -b {}\n'.format(child.url))
-    fifo.write('hint links userscript {}\n'.format(script_file))
-    parent = get_parent(arguments[1], arguments[2])
-    child = create_child(child)
-    child.parents.append(parent)
-    session.commit()
-    return
-
-
-def listen_echoes():
-    with open('/root/tree/echoes', 'r') as echoes:
-        return [echo.strip('\n') for echo in echoes.readlines()]
-
-
 def main():
     check_db()
-    if len(sys.argv) != 1:
-        arguments = [argument for argument in sys.argv[1:]]
-    else:
-        arguments = listen_echoes()
-    if arguments[0] == 'rapid':
-        qute_rapid(arguments)
-    elif arguments[0] == 'hint':
-        qute_hint(arguments)
-    elif arguments[0] == 'open':
-        qute_open(arguments)
     
 if __name__ == '__main__':
     main()

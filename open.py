@@ -22,7 +22,7 @@ config.bind('<', 'set-cmd-text -s :spawn --userscript ./open.py -t root ', mode=
 
 import sys,os
 
-path = os.path.dirname(__file__)
+path = os.path.dirname(os.path.realpath(__file__))
 
 if len(sys.argv) > 1:
     fifo = open(os.getenv('QUTE_FIFO'), 'w')

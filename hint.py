@@ -15,7 +15,7 @@ config.bind('f', 'spawn -u ./hint.py -t {url} ;; hint links userscript ./hint.py
 import os
 import sys
 
-path = os.path.dirname(__file__)
+path = os.path.dirname(os.path.realpath(__file__))
 
 if len(sys.argv) > 1:  #does the echoing of the args received
     with open('{}/tmp/echoes'.format(path), 'w') as echoes:

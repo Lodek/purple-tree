@@ -12,7 +12,7 @@ config.bind('F', 'spawn -u ./rapid.py {url} ;; hint links userscript ./rapid.py'
 
 import os
 import sys
-path = os.path.dirname(__file__)
+path = os.path.dirname(os.path.realpath(__file__))
 
 if len(sys.argv) > 1:
     with open('{}/tmp/echoes'.format(path), 'w') as echoes:

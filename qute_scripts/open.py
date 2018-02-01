@@ -20,31 +20,24 @@ Example of config to be added on config.py
 config.bind('<', 'set-cmd-text -s :spawn --userscript ./open.py -t root ', mode='normal')
 """
 
-import sys,os
-
-path = os.path.dirname(os.path.realpath(__file__))
+from common import *
 
 if len(sys.argv) > 1:
-    fifo = open(os.getenv('QUTE_FIFO'), 'w')
     parent = sys.argv[2]
-    flag = sys.argv[1]
+    flags = sys.argv[1]
 
     query = ''
     for arg in sys.argv[3:]:
         query += '{} '.format(arg)
     query= query [:-1]
 
-
-    fifo.write('open {} {}\n'.format(flag, query))
-
-    with open('{}/tmp/trunk'.format(path), 'a') as db:
-        db.write('{} ;; '.format(parent))
-    
-    fifo.write('spawn -u {}/open.py'.format(path))
+    echo_fifo('open {} {}'.format(flags, query))
+    echo_trunk('{} ;; '.format(parent))
+    echo_fifo('spawn -u {}/open.py'.format(path))
 
 else:
-    child = os.getenv('QUTE_TITLE')
-    with open('{}/tmp/trunk'.format(path), 'a') as db:
-        db.write('{}\n'.format(child))
+    child = qute_url
+    #date defined in common
+    echo_trunk('{} ;; {}'.format(child,date))
 
     

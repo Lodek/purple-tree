@@ -7,9 +7,10 @@ finally is generates tree.html and tree.org.
 this script should be called by the save-session,sh script
 """
 
-from sqlalchemy import Column, Integer, String, ForeignKey, create_engine, Table
+from sqlalchemy import Column, Integer, String, ForeignKey, create_engine, Table, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
+from subprocess import call
 import collections
 import requests
 import sys
@@ -20,16 +21,11 @@ css = "<style media='screen' type='text/css'> body{    background: #000;    font
 
 #filenames stuff
 root_dir = os.path.dirname(os.path.realpath(__file__))
-
-if len(sys.argv) > 1:
-    target_dir = sys.argv[1]
-    source_dir = sys.argv[2]
-else:
-    target_dir = root_dir
-    source_dir = root_dir
+target_dir = sys.argv[1]
+tmp_dir = sys.argv[2]
     
-db_file = 'treeline.db'
-db_txt = 'trunk'
+db_file = '{}/treeline/treeline.db'.format(target_dir)
+db_txt = '{}/trunk'.format(tmp_dir)
 
 forg = open('{}/treeline.org'.format(target_dir), 'w')
 fhtml = open('{}/treeline.html'.format(target_dir), 'w')
@@ -48,6 +44,9 @@ class Node(Base):
     id = Column(Integer, primary_key = True)
     url = Column(String)
     title = Column(String)
+    favorite = Column(Boolean, default=False)
+    in_session = Column(Boolean, default=False)
+    date = Column(String)
     childs = relationship("Node", secondary=relations_tb, primaryjoin=id==relations_tb.c.par_id, secondaryjoin=id==relations_tb.c.child_id, backref='parents')
 
 
@@ -116,12 +115,24 @@ def recursive(node,level):
         for child in node.childs:
             recursive(child, level+1)
 
+def handle_favorites():
+    with open(favorites_file, 'r') as ff:
+        favorites = [fav.strip('\n') for fav in ff.readlines()]
+    for favorite in favorites:
+        node = get_node(favorite)
+        node.favorite = True
+        
+def dl_favorite(url):
+    call(['wget', '-k', '-E', '-p', '-P', target_dir, url])
 
 def main():
     check_db()
     hist = get_txt()
     for visit in hist:
         add_node(visit)
+    mark_favorites()
+    dl_favorites()
+    mark_session()
     session.commit()
     gen_files()
 

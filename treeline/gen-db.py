@@ -6,36 +6,33 @@ it also reads the favorites files (which signalizes that the souce code of that 
 finally is generates tree.html and tree.org. 
 this script should be called by the save-session,sh script
 """
+import collections
+from model import *
 
 Value = collections.namedtuple('Value', 'parent child date')
 
+#tmp files to generate database
+pdata = '/tmp/treeline'
+pfavoritef = pdata+'/favorite'
+ptrunkf = pdata+'/trunk'
+pechof =  pdata+'/echo'
 
-def check_db():
-    """ checks if db exists. If it does not, creates it  and adds root """
-    #make db dir
-    if not os.path.exists(sys.argv[1]+'/treeline/'):
-    os.makedirs(sys.argv[1]+'/treeline/')
-    if not os.path.isfile(_dbf)):
-        Base.metadata.create_all(engine)
-        session.add(Node(title='root',url='root'))
-        session.commit()
-    return
 
 
 def read_trunkf():
     """ reads the txt db file and parses it """
-    with open(_trunkf, 'r') as tf:
+    with open(ptrunkf, 'r') as trunkf:
         trunk = []
-        for line in tf.readlines():
+        for line in trunkf.readlines():
             visit = line.strip('\n').split(' ;; ')
-            trunk.append(Value(parent=visit[0], child=visit[1]), date=visit[2])
+            trunk.append(Value(parent=visit[0], child=visit[1], date=visit[2]))
     return trunk
 
 
 def add_node(visit):
     """ Expects an object of type visit (named tuple). Returns the node object for the matching child of the visit """
     node = get_node(visit.child)
-    if node.date == '':
+    if node.date == '?':
         node.date = visit.date
     parent = get_node(visit.parent)
     if parent not in node.parents:
@@ -45,23 +42,22 @@ def add_node(visit):
 
 
 def mark_favorites():
-    with open(favoritef, 'r') as ff:
-        favorites = [fav.strip('\n') for fav in ff.readlines()]
+    with open(pfavoritef, 'r') as favoritesf:
+        favorites = [fav.strip('\n') for fav in favoritesf.readlines()]
     for favorite in favorites:
         node = get_node(favorite)
         node.favorite = True
-
-        
-def mark_session():
     return
 
-    
-def get_node(url):
-    """ queries DB for Node with the given url if not existent creates it"""
-    node = session.query(Node).filter(Node.url==url).first()
-    if node is None:
-        node = Node(url=url, title=get_title(url))
-    return node
+
+def mark_session():
+    with open(psessionf, 'r') as sessionf:
+        session = [line.strip('\n') for line in sessionf.readlines()]
+        session = [line.group(1) for line in [re.match('.*url: (.*)',line) for line in session] if line is not None]
+        for line in session:
+            node = get_node(line)
+            node.in_session = True
+    return
 
 
 def get_title(url):
@@ -74,15 +70,13 @@ def get_title(url):
     return title
 
 def main():
-    
-    check_db()
-    
     hist = read_trunkf()
     for visit in hist:
         add_node(visit)
     mark_favorites()
     mark_session()
     session.commit()
-    
+    path = os.path.dirname(os.path.realpath(__file__))
+    call([path+'/treeline.py', session_name])
 if __name__ == '__main__':
     main()

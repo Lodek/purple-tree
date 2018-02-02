@@ -9,11 +9,13 @@ import sys
 import os
 import re
 
-_dict = os.getenv('HOME')+'/.tlrc'
-_data_dir = '/tmp/treeline'
-_favoritef =  data_dir+'/favorite'
-_trunkf = data_dir+'/trunk'
-_dbf = ''
+_fifo = open(os.getenv('QUTE_FIFO'), 'w')
+_pdata = '/tmp/treeline'
+_pfavoritef = pdata+'/favorite'
+_ptrunkf = pdata+'/trunk'
+_pechof =  pdata+'/echo'
+
+#finish path, get declarations
 
 Base = declarative_base()
 engine = create_engine('sqlite:///'+_dbf, echo=True)

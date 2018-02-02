@@ -38,6 +38,6 @@ if len(sys.argv) > 1:
 else:
     child = qute_url
     #date defined in common
-    echo_trunk('{} ;; {}'.format(child,date))
+    echo_trunk('{} ;; {}\n'.format(child,date))
 
     

@@ -12,6 +12,9 @@ Value = collections.namedtuple('Value', 'parent child date')
 
 def check_db():
     """ checks if db exists. If it does not, creates it  and adds root """
+    #make db dir
+    if not os.path.exists(sys.argv[1]+'/treeline/'):
+    os.makedirs(sys.argv[1]+'/treeline/')
     if not os.path.isfile(_dbf)):
         Base.metadata.create_all(engine)
         session.add(Node(title='root',url='root'))
@@ -71,7 +74,9 @@ def get_title(url):
     return title
 
 def main():
+    
     check_db()
+    
     hist = read_trunkf()
     for visit in hist:
         add_node(visit)

@@ -9,11 +9,13 @@ example of config file
 config.bind('F', 'spawn -u ./rapid.py {url} ;; hint links userscript ./rapid.py', mode='normal')
 
 """
+from common import *
+
 if len(sys.argv) > 1:
     echo_echo(sys.argv[1]) #expected to pass parent
 
 else:
-    parent = listen_echo() #args expected: parent url
+    parent = hear_echo() #args expected: parent url
     child = qute_url
     echo_fifo('open -b {}'.format(child))
     echo_trunk('{} ;; {} ;; {}\n'.format(parent,child,date))

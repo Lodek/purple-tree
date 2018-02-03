@@ -37,6 +37,15 @@ class Node(Base):
 
 Base.metadata.create_all(engine)
 
+def get_title(url):
+    """ From URL returns title (if it exists, else it returns the url) """
+    try:
+        obj=requests.get(url)
+        title=re.findall('<title>(.*?)<\/title>',obj.text)[0]
+    except BaseException:
+        title=url
+    return title
+
 def get_node(url):
     """ queries DB for Node with the given url if not existent creates it"""
     node = session.query(Node).filter(Node.url==url).first()

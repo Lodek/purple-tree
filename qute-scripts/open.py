@@ -30,7 +30,8 @@ if len(sys.argv) > 1:
     for arg in sys.argv[3:]:
         query += '{} '.format(arg)
     query= query [:-1]
-
+    query = query.replace(' ', '+')
+    query='https://duckduckgo.com/?q={}&ia=web'.format(query)
     echo_fifo('open {} {}'.format(flags, query))
     echo_trunk('{} ;; '.format(parent))
     echo_fifo('spawn -u {}/open.py'.format(path))

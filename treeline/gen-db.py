@@ -60,15 +60,6 @@ def mark_session():
     return
 
 
-def get_title(url):
-    """ From URL returns title (if it exists, else it returns the url) """
-    try:
-        obj=requests.get(url)
-        title=re.findall('<title>(.*?)<\/title>',obj.text)[0]
-    except BaseException:
-        title=url
-    return title
-
 def main():
     hist = read_trunkf()
     for visit in hist:

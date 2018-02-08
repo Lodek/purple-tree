@@ -24,7 +24,7 @@ def main():
                 if ' ;; END' in piped:
                     #since requests is slow, it might happen that there are more than one command on the fifo at a time
                     #this uses regex to create a list with all the commands
-                    packages=re.findall('([0-9]+.*? ;; END)', piped) 
+                    packages=re.findall('([0-9]+.*? ;; END)', piped, flags=re.DOTALL) 
                     piped = ''
                     packages = [package.split(' ;; ') for package in packages]
                     for package in packages:
@@ -72,6 +72,7 @@ def mark_add(package):
 def note_add(package):
     """ Adds a note entry to the Notes table
     expected package [3, URL, TEXT, END]"""
+    print(package)
     node = get_node(package[1])
     body = package[2]
     note = Note(node=node, body=body)

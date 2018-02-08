@@ -5,25 +5,24 @@ Since qute doesn't allow arguments to be passed using 'hint links userscript /pa
 1st call spawn -u ./hint.py -t {url} -> URL of parent + open flag
 2nd call hint links userscript ./hint.py -> call the script to actually generate the hints
 
-1st call echoes the arguments into a tmp file
-2nd call receives the child url from qute, reads tmp file, opens the link and echoes parent + child to txt file
+1st call:  echoes the open flag into tmp file and parent to tree line fifo
+2nd call reads open flag from tmp file, opens link in qute and echo child url to treeline fifo
 
-THis is how the script should be called on qute:
-config.bind('f', 'spawn -u ./hint.py -t {url} ;; hint links userscript ./hint.py', mode='normal')
+sample config: config.bind('f', 'spawn -u ./hint.py -h {url} ;; hint links userscript ./hint.py', mode='normal')
 """ 
 
 from common import *
 
 if len(sys.argv) > 1:
-    #echoes of the args received
-    echo_echo('{} {}'.format(sys.argv[1],sys.argv[2]))
+    echo_echo(sys.argv[1]) #echo open flag to echo file
+    echo_treeline('1 ;; {} ;; '.format(sys.argv[2])) #echo parent to treeline fifo
 
 else:
-    #args expected: open flag(b,t,n) and parent url respectively
-    args = hear_echo().split(' ')
-    flags = args[0]
-    parent = args[1]
+    #args expected: open flag(b,t,n)
+    flag = listen_echo()
+    flag = flag_parser(flag)
     child = qute_url
-    #date defined in common
-    echo_fifo('open {} {}'.format(flags, child))
-    echo_trunk('{} ;; {} ;; {}\n'.format(parent,child,date))
+    echo_qt('open {} {}'.format(flag, child))
+    session_save()
+    echo_treeline('{} ;; END'.format(child))
+

@@ -8,55 +8,61 @@ css = "<style media='screen' type='text/css'> body{    background: #000;    font
 from model import Node, Note
 from config import *
 
-
-html_fp = target_p+'/treeline.html'
-org_fp = target_p+'/treeline.org'
-notes_fp = target_p+'/treeline-notes.org'
-favorites_p = target_p+'/.treeline/favorites'
-html_f = open(html_fp,'w')
-org_f = open(org_fp,'w')
-notes_f = open(notes_fp,'w')
+marks_p = target_p+'/.treeline/marks'
 
 
-def gen_files():
+def gen_files(files):
     root = db_session.query(Node).filter(Node.url=='root').first()
-    html_f.write('{}\n'.format(css))
-    recursive(root,1)
+    files[0].write('{}\n'.format(css))
+    recursive(root,1,files)
 
-def recursive(node,level):
+def recursive(node,level,files):
     """ some recursive action to generate html and org tree files
         essentially it calls this function for each child in a node until there is no child """
-    org_f.write('*'*level+' [[{}][{}]]\n'.format(node.url,node.title))
-    html_f.write('<h{}> <a href="{}">{}*{}</a> </h{}>\n'.format(level,node.url,'-'*level,node.title,level))
+    files[1].write(('*'*level+' [[{}][{}]]\n'.format(node.url,node.title)))
+    files[0].write('<h{}> <a href="{}">{}*{}</a> </h{}>\n'.format(level,node.url,'-'*level,node.title,level))
     if node.childs == []:
         return
     else:
         for child in node.childs:
-            recursive(child, level+1)
+            recursive(child, level+1,files)
 
 
-def dl_favorites():
-    favorites = db_session.query(Node).filter(Node.favorite==True).all()
-    for favorite in favorites:
-        folder=favorites_p+'/'+favorite.title
+def dl_marks():
+    marks = db_session.query(Node).filter(Node.mark==True).all()
+    for mark in marks:
+        folder=marks_p+'/'+mark.title
         if not os.path.exists(pwget):
             os.makedirs(pwget)
-            call(['wget', '-k', '-E', '-p', '-P', pwget, favorite.url])
+            call(['wget', '-k', '-E', '-p', '-P', pwget, mark.url])
 
 
-def gen_notes():
+def gen_notes(files):
     notes = db_session.query(Note).all()
     if notes is None:
         return
     for note in notes:
-        notes_f.write('* {}\n{}'.format(note.node.url,body))
+        files[2].write('* {}\n{}'.format(note.node.url,note.body))
         
-    
-def update():
+
+def open_files():
+    html_fp = target_p+'/treeline.html'
+    org_fp = target_p+'/treeline.org'
+    notes_fp = target_p+'/treeline-notes.org'
+
     html_f = open(html_fp,'w')
     org_f = open(org_fp,'w')
     notes_f = open(notes_fp,'w')
-    gen_files()
-    gen_notes()
-    dl_favorites()
+    return (html_f, org_f, notes_f)
+
+def close_files(files):
+    for f in files:
+        f.close()
+        
+def update():
+    files=open_files()
+    gen_files(files)
+    gen_notes(files)
+    dl_marks()
+    close_files(files)
     return

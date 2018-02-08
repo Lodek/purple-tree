@@ -13,8 +13,10 @@ fifo_fp = tmp_p+'/fifo'
 session_fp = tmp_p+'/session.yml'
 session_ln = home+'/.local/share/qutebrowser/sessions/tmp_treeline.yml'
 make_dir(tmp_p)
-#if os.path.islink(session_ln):
-#    os.symlink(session_fp, session_ln)
+
+os.remove(session_ln)
+os.symlink(session_fp, session_ln)
+
 if not os.path.exists(fifo_fp):
     os.mkfifo(fifo_fp)
 

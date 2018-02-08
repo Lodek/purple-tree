@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+""" 
+contains the sqlalchemy declarations and the classes related to the database
+"""
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Boolean, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -13,7 +15,7 @@ class Node(Base):
     id = Column(Integer, primary_key = True)
     url = Column(String)
     title = Column(String)
-    favorite = Column(Boolean, default=False)
+    mark = Column(Boolean, default=False)
     in_session = Column(Boolean, default=False)
     date = Column(String, default='?')
     notes = relationship('Note', back_populates='node')

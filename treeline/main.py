@@ -30,11 +30,6 @@ class Pac_Node():
         self.parent = parent
         self.child = child
 
-class Pac_Fav():
-    def __init__(self, url):
-        self.url = url
-
-        
 def ex(package):
     """ Removes the treeline's entries from /tmp and breaks out of the while True loop. """
     return
@@ -58,14 +53,20 @@ def node_add(package):
 
 def fav_add(package):
     """ Marks a node as a favorite and update 
-    expected package [3, URL, END]"""
-
-    pac = Pac_Fav(url=package[1])
-    node = get_node(pac.url)
+    expected package [2, URL, END]"""
+    node = get_node(package[1])
     node.favorite = True
     update()
     return
 
+def note_add(package):
+    """ Adds a note entry to the Notes table
+    expected package [3, URL, TEXT, END]"""
+    node = get_note(package[1])
+    body = package[2]
+    note = Note(node=node, body=body)
+    db_session.add(note)
+    update()
 
 def update(package=None):
     """ Saves the qute session, parses the file to identify the websites in session, updates the database and finally  updates the treeline.org and treeline.html """

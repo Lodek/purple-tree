@@ -1,7 +1,9 @@
-from trees import *
 import sys,datetime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+ptrees = os.getenv('HOME')+'/.config/treeline'
+sys.path.insert(0,ptrees)
+from trees import trees
 
 def make_dir(path):
     if not os.path.exists(path):

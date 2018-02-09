@@ -1,10 +1,6 @@
-c.backend = 'webkit'
-c.content.geolocation = 'ask'
 config.load_autoconfig()
-scripts_p = '/home/lodek/projects/dev-treeline/qute-scripts'
 
 c.aliases['sd'] = 'config-source -c'
-c.aliases['sr'] = 'config-source -c ~/.config/treeline/treeline-config.py'
 c.aliases['f'] = 'spawn -u {}/mark.py'.format(scripts_p)
 c.aliases['n'] = 'spawn -u {}/notes.py'.format(scripts_p)
 
@@ -18,4 +14,3 @@ config.bind('d', 'tab-close  ;; spawn -u {}/update.py'.format(scripts_p), mode='
 config.bind('H', 'back ;; spawn -u {}/update.py'.format(scripts_p), mode='normal')
 config.bind('L', ' forward ;; spawn -u {}/update.py'.format(scripts_p), mode='normal')
 
-config.bind('<Ctrl-l>', 'set-cmd-text -s :spawn --userscript test.sh ', mode='normal')  

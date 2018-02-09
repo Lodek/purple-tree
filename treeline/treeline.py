@@ -6,7 +6,7 @@ it also uses wget to download any favorites that aren't in the .treeline/favorit
 
 from model import Node, Note
 from config import *
-import subprocess
+import os
 marks_p = target_p+'/.treeline/marks'
 
 
@@ -36,8 +36,7 @@ def dl_marks():
         folder=marks_p+'/'+str(mark.id)
         if not os.path.exists(folder):
             os.makedirs(folder)
-            subprocess.check_output(['wget', '-k', '-E', '-p', '-P', folder, "'{}'".format(mark.url)])
-
+            os.system("wget -k -E -p -P {} '{}'".format(folder,mark.url))
 
 def gen_notes(files):
     notes = db_session.query(Note).all()

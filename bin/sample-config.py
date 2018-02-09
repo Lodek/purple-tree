@@ -1,11 +1,12 @@
 config.load_autoconfig()
 
 c.aliases['sd'] = 'config-source -c'
+c.aliases['sr'] = 'config-source -c ~/.config/treeline/treeline-config.py'
 c.aliases['f'] = 'spawn -u {}/mark.py'.format(scripts_p)
 c.aliases['n'] = 'spawn -u {}/notes.py'.format(scripts_p)
 
-config.bind('f', 'spawn -u {}/hint.py -t {{url}} ;; hint links userscript {}/hint.py'.format(scripts_p,scripts_p), mode='normal')
-config.bind('F', 'spawn -u {}/rapid.py {{url}} ;; hint links userscript {}/rapid.py'.format(scripts_p,scripts_p), mode='normal')
+config.bind('f', 'spawn -u {}/hint.py -h {{url}} ;; hint links userscript {}/hint.py'.format(scripts_p,scripts_p), mode='normal')
+config.bind('F', 'spawn -u {}/hint.py -b {{url}} ;; hint links userscript {}/hint.py'.format(scripts_p,scripts_p), mode='normal')
 config.bind('<', 'set-cmd-text -s :spawn --userscript {}/open.py -t root '.format(scripts_p), mode='normal')
 config.bind('>', 'set-cmd-text -s :spawn --userscript {}/open.py -t {{url}} '.format(scripts_p), mode='normal')
 

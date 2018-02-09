@@ -1,0 +1,13 @@
+* Overview
+Treeline is a tool to make research easier. It provides a browser navigation history in tree as well as the ability to take notes/highlight text from website, mark a website and have a copy of it saved locally (and then grep through all the saved pages for that bit of information that has been forgotten) and a handy org file where the history is structured using org indentation. Currently it extends qutebrowser and therefore only work with qute.
+* Usage
+Start main.py, add an entry to your qutebrowser's config file to source treeline's binds with an alias and that's it.
+** Details
+treeline saves sessions in ~/.trees by default. You can pass an argument to main.py to name that session otherwise a new session with today's date will be created on ~/.trees.
+Treeline also reads a trees.py located under ~/.config/treeline/trees.py. Trees.py contains a dictionary where the key is the research name and the value is a directory, that allows sessions to be saved wherever you want.
+
+* About
+** Qutebrowser
+   Treeline is not a browser so qute is needed to navigate through the web. The brain of the operation is a set of commands/binds that override quete's commands (hints, open, back, forward). Those commands call a script that transfer the required data to treeline's fifo allowing the database to be generated
+** Treeline
+Treeline is a python script that is to be run like a process. It generates a fifo and constantly scans information being sent to it. Since all of this is real time, the org file is generated on the fly each time there is a change in qute's session.

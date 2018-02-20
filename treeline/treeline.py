@@ -27,7 +27,8 @@ def recursive(node,level,files):
         return
     else:
         for child in node.childs:
-            recursive(child, level+1,files)
+            if child not in node.parents:
+                recursive(child, level+1,files)
 
 
 def dl_marks():
@@ -55,6 +56,7 @@ def open_files():
     org_f = open(org_fp,'w')
     notes_f = open(notes_fp,'w')
     return (html_f, org_f, notes_f)
+
 
 def close_files(files):
     for f in files:
